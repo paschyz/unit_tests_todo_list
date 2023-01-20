@@ -13,34 +13,28 @@ class TestTodoList(unittest.TestCase):
     def setUp(self):
         self.user = User("example@gmail.com", "John", "Doe",
                          "Pa$$word1", date(2000, 1, 1))
-        self.list = TodoList(self.user)
+        self.list = TodoList()
 
     def test_add_item(self):
-        self.list.add_item("Test Item", "This is a test item", "not_started")
+        self.list.add_item("Test Item", "This is a test item",
+                           "not_started", self.user)
         self.assertEqual(len(self.list.items), 1)
-
-    def test_add_item_invalid_user(self):
-        self.user.password = "pass1"
-        with self.assertRaises(Exception) as context:
-            self.list.add_item(
-                "Test Item", "This is a test item", "not_started")
-        self.assertEqual("User is not valid.", str(context.exception))
 
     def test_add_item_too_soon(self):
         self.list.add_item("Test Item", "This is a test item",
-                           "not_started")
+                           "not_started", self.user)
         with self.assertRaises(Exception) as context:
             self.list.add_item(
-                "Test Item 2", "not_started", "not_started")
+                "Test Item 2", "not_started", "not_started", self.user)
         self.assertEqual("Cannot add item. Wait for 30 minutes.",
                          str(context.exception))
 
     def test_add_item_name_already_exists(self):
         self.list.add_item("Test Item", "This is a test item",
-                           "not_started")
+                           "not_started", self.user)
         with self.assertRaises(Exception) as context:
             self.list.add_item(
-                "Test Item", "This is a test item", "not_started")
+                "Test Item", "This is a test item", "not_started", self.user)
         self.assertEqual("Item name already exists.", str(context.exception))
 
     @patch('modules.todo_list.EmailSenderService')
@@ -55,7 +49,8 @@ class TestTodoList(unittest.TestCase):
 
         self.list.set_list(items)
         assert len(self.list.items) == 7
-        self.list.add_item("Test Item 8", "This is a test item", "not_started")
+        self.list.add_item(
+            "Test Item 8", "This is a test item", "not_started", self.user)
         assert len(self.list.items) == 8
         mock_email_sender.send.assert_called_once_with(
             self.user.email, "You have 8 items in your todo list. You have 2 items left to add.", "Lorem ipsum")
@@ -68,6 +63,6 @@ class TestTodoList(unittest.TestCase):
         self.list.set_list(items)
         with self.assertRaises(Exception) as context:
             self.list.add_item(
-                "Test Item 10", "not_started", "not_started")
+                "Test Item 10", "not_started", "not_started", self.user)
         self.assertEqual("TodoList max size of 10 exceeded.",
                          str(context.exception))

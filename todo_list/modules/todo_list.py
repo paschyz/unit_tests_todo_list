@@ -4,8 +4,7 @@ from modules.email_sender_service import EmailSenderService
 
 
 class TodoList:
-    def __init__(self, user):
-        self.user = user
+    def __init__(self):
         self.items = []
         self.item_names = set()
         self.last_item_creation_time = None
@@ -20,9 +19,7 @@ class TodoList:
         if len(self.items) > 0:
             self.last_item_creation_time = self.items[-1].date_created
 
-    def add_item(self, item_name, item_content, item_state):
-        if not self.user.is_valid() or not self.user.is_old_enough():
-            raise Exception("User is not valid.")
+    def add_item(self, item_name, item_content, item_state, user):
         if item_name in self.item_names:
             raise Exception("Item name already exists.")
         if len(item_content) > 1000:
@@ -40,4 +37,4 @@ class TodoList:
 
         if len(self.items) == 8:
             self.email_sender.send(
-                self.user.email, "You have 8 items in your todo list. You have 2 items left to add.", "Lorem ipsum")
+                user.email, "You have 8 items in your todo list. You have 2 items left to add.", "Lorem ipsum")

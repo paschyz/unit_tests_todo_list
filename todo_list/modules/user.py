@@ -1,6 +1,8 @@
 import datetime
 import re
 
+from modules.todo_list import TodoList
+
 
 class User:
     def __init__(self, email, firstname, lastname, password, birthdate):
@@ -9,6 +11,7 @@ class User:
         self.lastname = lastname
         self.password = password
         self.birthdate = birthdate
+        self.todo_list: TodoList = None
 
     def is_valid(self):
         if self.firstname == "":
@@ -26,6 +29,12 @@ class User:
         if not self.is_old_enough():
             return False
         return True
+
+    def set_todo_list(self, todo_list):
+        self.todo_list = todo_list
+
+    def get_todo_list(self):
+        return self.todo_list
 
     def is_old_enough(self):
         # must be at least 13 years old

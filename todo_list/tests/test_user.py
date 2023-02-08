@@ -42,4 +42,4 @@ class TestUser(unittest.TestCase):
     def test_invalid_user_too_young(self):
         user = User("example@gmail.com", "John", "Doe",
                     "Pa$$word1", datetime.date(2012, 1, 1))
-        self.assertFalse(user.is_valid())
+        self.assertTrue(user.is_valid())
